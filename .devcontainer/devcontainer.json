@@ -1,0 +1,22 @@
+{
+  "name": "Python 3.12 - FastAPI Development",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [8000, 8001],
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter",
+        "ms-vscode-remote.remote-containers"
+      ]
+    }
+  },
+  "postCreateCommand": "pip install -e . && pytest --version",
+  "shutdownAction": "stopContainer"
+}
