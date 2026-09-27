@@ -21,22 +21,23 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_initial_test_data(db: Session):
     # Check if users already exist to avoid duplicates
-    existing_users = get_users(db)
+    user_exists = get_user_by_email(db, "user@example.com") is not None
+    admin_exists = get_user_by_email(db, "admin@example.com") is not None
 
-    if not any(user.email == "user@example.com" for user in existing_users):
+    # Only create test data if neither user exists
+    if not user_exists and not admin_exists:
         # Create test user
         test_user = UserCreate(
             email="user@example.com",
-            password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGtGtWm",  # testpassword123 hashed
+            password="b55c8792d1ce458e279308835f8a97b580263503e76e1998e279703e35ad0c2e",  # testpassword123 SHA256 hashed
             role=UserRole.USER
         )
         create_user(db, test_user)
 
-    if not any(user.email == "admin@example.com" for user in existing_users):
         # Create test admin
         test_admin = UserCreate(
             email="admin@example.com",
-            password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGtGtWm",  # adminpassword123 hashed
+            password="426848eb68bf6aa07212a4070863dbe30d92456cf011e238252ddfd86a247856",  # adminpassword123 SHA256 hashed
             role=UserRole.ADMIN
         )
         create_user(db, test_admin)

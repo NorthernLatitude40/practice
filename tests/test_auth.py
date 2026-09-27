@@ -64,6 +64,7 @@ def test_register_existing_user():
     assert "already registered" in response.json()["detail"]
 
 def test_login_success():
+    # Login with the email that was created in setup_module
     response = client.post(
         "/token",
         data={"username": "user@example.com", "password": "testpassword123"}

@@ -44,7 +44,7 @@ def get_current_active_user(current_user: DBUser = Depends(get_current_user)):
     return current_user
 
 def get_admin_user(current_user: DBUser = Depends(get_current_active_user)):
-    if current_user.role != UserRole.ADMIN.value:
+    if str(current_user.role) != UserRole.ADMIN.value:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -65,7 +65,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return UserResponse(
-        email=db_user.email,
+        email=str(db_user.email),
         role=UserRole(db_user.role)
     )
 
@@ -80,14 +80,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         )
 
     access_token = create_access_token(
-        data={"sub": user.email}
+        data={"sub": user.email, "role": str(user.role)}
     )
     return Token(access_token=access_token, token_type="bearer")
 
 @app.get("/api/v1/profile", response_model=UserResponse)
 def read_profile(current_user: DBUser = Depends(get_current_active_user)):
     return UserResponse(
-        email=current_user.email,
+        email=str(current_user.email),
         role=UserRole(current_user.role)
     )
 

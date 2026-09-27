@@ -23,5 +23,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     role: UserRole
 
-class UserInDB(UserResponse):
+class UserInDB(BaseModel):
+    email: EmailStr
+    role: str  # Store as string to match database schema
     id: int
