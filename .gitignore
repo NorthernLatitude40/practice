@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+python3.*/site-packages/
+
+# Environment files
+.env
+.env.example
+
+# Database files
+auth.db
+test.db
+test_unit_fixed.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and cache
+.pytest_cache/
+.log
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
