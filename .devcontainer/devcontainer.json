@@ -13,6 +13,9 @@
     8001
   ],
   "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/sshd:1": {}
+  },
   "customizations": {
     "vscode": {
       "settings": {
@@ -27,7 +30,7 @@
       ]
     }
   },
-  "postCreateCommand": "pip install -e . && pytest --version",
+  "postCreateCommand": "pip install -e . && pytest --version && eval \"$(ssh-agent)\" && echo 'SSH agent started' || true",
   // 每次連線都重新建立 rg 連結（VS Code 更新後路徑會變）
   "postAttachCommand": "bash .devcontainer/fix-rg.sh",
   "shutdownAction": "stopContainer"
