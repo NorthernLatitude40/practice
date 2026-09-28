@@ -1,7 +1,17 @@
 {
   "name": "Python 3.12 - FastAPI Development",
-  "dockerFile": "Dockerfile",
-  "forwardPorts": [8000, 8001],
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  // extraHosts 不是 devcontainer.json 的有效欄位，要改用 runArgs
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+  "forwardPorts": [
+    8000,
+    8001
+  ],
   "remoteUser": "vscode",
   "customizations": {
     "vscode": {
@@ -13,10 +23,12 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "ms-toolsai.jupyter",
-        "ms-vscode-remote.remote-containers"
+        "RooVeterinaryInc.roo-cline"
       ]
     }
   },
   "postCreateCommand": "pip install -e . && pytest --version",
+  // 每次連線都重新建立 rg 連結（VS Code 更新後路徑會變）
+  "postAttachCommand": "bash .devcontainer/fix-rg.sh",
   "shutdownAction": "stopContainer"
 }

@@ -32,6 +32,10 @@ client = TestClient(app)
 def setup_module(module):
     # Initialize test data
     db = next(override_get_db())
+    # Clear existing users first to avoid conflicts
+    from sqlalchemy import text
+    db.execute(text("DELETE FROM users"))
+    db.commit()
     create_initial_test_data(db)
 
 def teardown_module(module):
@@ -46,7 +50,7 @@ def test_register_new_user():
             "role": "user"
         }
     )
-    assert response.status_code == 200
+    assert response.status_code == 200, f"Expected 200 but got {response.status_code}: {response.text}"
     data = response.json()
     assert data["email"] == "newuser@example.com"
     assert data["role"] == "user"

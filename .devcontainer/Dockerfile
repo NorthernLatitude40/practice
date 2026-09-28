@@ -1,37 +1,36 @@
-# Use official Python image
 FROM python:3.12-slim
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# 1. 系統工具 + ripgrep + vscode 使用者（固定 UID/GID 1000，對應 WSL 的一般使用者）
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    iputils-ping \
     curl \
-    build-essential \
+    wget \
+    net-tools \
+    git \
+    ripgrep \
+    sudo \
+    && groupadd --gid 1000 vscode \
+    && useradd --uid 1000 --gid 1000 -m -s /bin/bash vscode \
+    && echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode \
+    && chmod 0440 /etc/sudoers.d/vscode \
     && rm -rf /var/lib/apt/lists/*
 
-# Create and set working directory
 WORKDIR /app
 
-# Install Python dependencies
+# 2. 先複製依賴檔，讓 Docker 快取這一層（程式碼改動不會重裝套件）
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-# Install development tools
-RUN pip install --no-cache-dir \
-    black \
-    pylint \
-    pytest \
-    pytest-cov
+# 3. 複製專案原始碼（dev container 會把工作區掛載進來覆蓋，這行主要給正式部署用）
+COPY --chown=vscode:vscode . .
 
-# Copy project files
-COPY . .
+EXPOSE 8000
 
-# Set environment variables for development
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Create a non-root user
-RUN useradd -m vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 USER vscode
 
-# Set up the container for development
-CMD ["/bin/bash", "-c", "while true; do sleep 3600; done"]
+CMD ["uvicorn", "src.auth_module.main:app", "--host", "0.0.0.0", "--port", "8000"]
